@@ -324,12 +324,10 @@ inline vtkIdType InsertCell(vtkUnstructuredGrid *theInput,
     theFaceLocations->InsertNextValue(theFaces->GetMaxId() + 1);
 
     // insert cell connectivity and faces stream
-    vtkIdType       nfaces = 0;
-    const vtkIdType*  face = 0;
+    vtkNew<vtkIdList> faces;
     vtkIdType realnpts;
-    theInput->GetFaceStream(theCellId, nfaces, face);
-    vtkUnstructuredGrid::DecomposeAPolyhedronCell(
-                                                  nfaces, face, realnpts, theConnectivity, theFaces);
+    theInput->GetFaceStream(theCellId, faces);
+    vtkUnstructuredGrid::DecomposeAPolyhedronCell(faces->GetId(0), faces->GetPointer(1), realnpts, theConnectivity, theFaces);
   }
 #endif
 

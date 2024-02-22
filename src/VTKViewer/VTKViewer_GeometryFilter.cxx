@@ -939,10 +939,11 @@ VTKViewer_GeometryFilter
 #if VTK_XVERSION > 50700
         case VTK_POLYHEDRON:
         {
-          vtkIdType nFaces = 0;
-          const vtkIdType* ptIds = 0;
+          vtkNew<vtkIdList> faces;
+          input->GetFaceStream(cellId, faces);
+          vtkIdType nFaces = faces->GetId(0);
+          const vtkIdType* ptIds = faces->GetPointer(1);
           vtkIdType idp = 0;
-          input->GetFaceStream(cellId, nFaces, ptIds);
 #ifdef SHOW_COINCIDING_3D_PAL21924
           if ( !myShowInside )
           {
