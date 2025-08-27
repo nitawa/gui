@@ -47,9 +47,8 @@ void VTKViewer_DataSetMapper::Render(vtkRenderer *ren, vtkActor *act)
   // just to create VTKViewer_PolyDataMapper instead of vtkPolyDataMapper
   if( this->PolyDataMapper == NULL )
   {
-    vtkDataSetSurfaceFilter *gf = vtkDataSetSurfaceFilter::New();
     VTKViewer_PolyDataMapper *pm = VTKViewer_PolyDataMapper::New();
-    pm->SetInputConnection(gf->GetOutputPort());
+    pm->SetInputConnection(this->GeometryExtractor->GetOutputPort());
 
     pm->SetMarkerEnabled( this->MarkerEnabled );
     if( this->MarkerType != VTK::MT_USER )
@@ -59,7 +58,6 @@ void VTKViewer_DataSetMapper::Render(vtkRenderer *ren, vtkActor *act)
     pm->SetBallEnabled( this->BallEnabled );
     pm->SetBallScale( this->BallScale );
     
-    this->GeometryExtractor = gf;
     this->PolyDataMapper = pm;
   }
   vtkDataSetMapper::Render(ren, act);
