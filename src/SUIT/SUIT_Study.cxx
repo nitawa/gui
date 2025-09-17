@@ -142,9 +142,9 @@ bool SUIT_Study::openDocument( const QString& fileName )
 /*!
  * Save document as \a fileName. Set file name.
  */
-bool SUIT_Study::saveDocumentAs( const QString& fileName, bool isBackup/*=false*/ )
+bool SUIT_Study::saveDocumentAs( const QString& fileName )
 {
-  if (!isBackup) {
+  if (!isAutoSaving()) {
     myName = fileName;
     myIsSaved = true;
     myIsModified = false;
@@ -188,6 +188,22 @@ void SUIT_Study::update()
 void SUIT_Study::sendChangesNotification()
 {
   emit studyModified( this );
+}
+
+/*!
+  Set study auto saving to \a on.
+ */
+void SUIT_Study::setIsAutoSaving(const bool on /*=true*/)
+{
+  myIsAutoSaving = on;
+}
+
+/*!
+ *\retval \c true - if study is auto saving, else \c false.
+ */
+bool SUIT_Study::isAutoSaving() const
+{
+  return myIsAutoSaving;
 }
 
 /*!

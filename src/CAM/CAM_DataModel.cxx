@@ -209,3 +209,20 @@ bool CAM_DataModel::create( CAM_Study* )
   \brief Emitted when the root data object is changed.
   \param root new root data object
 */
+
+
+/*!
+  Set data model auto saving to \a on.
+ */
+void CAM_DataModel::setIsAutoSaving(const bool on /*=true*/)
+{
+  myIsAutoSaving = on;
+}
+
+/*!
+ *\retval \c true - if data model is auto saving, else \c false.
+ */
+bool CAM_DataModel::isAutoSaving() const
+{
+  return myIsAutoSaving;
+}

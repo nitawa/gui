@@ -30,6 +30,7 @@
 #include "LightApp_HDFDriver.h"
 
 #include "SUIT_ResourceMgr.h"
+#include "SUIT_AutoSaveResetter.h"
 #include "SUIT_DataObjectIterator.h"
 #include "SUIT_DataBrowser.h"
 #include "SUIT_TreeModel.h"
@@ -135,7 +136,7 @@ bool LightApp_Study::loadDocument( const QString& theStudyName )
 /*!
   Saves document
 */
-bool LightApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/*=false*/ )
+bool LightApp_Study::saveDocumentAs( const QString& theFileName )
 {
   SUIT_ResourceMgr* resMgr = application()->resourceMgr();
   if( !resMgr )
@@ -154,7 +155,13 @@ bool LightApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/*
 
     std::vector<std::string> anOldList = myDriver->GetListOfFiles( aModel->module()->name().toLatin1().constData() );
     listOfFiles.clear();
-    aModel->saveAs( theFileName, this, listOfFiles );
+    if (isAutoSaving()) {
+      SUIT_AutoSaveResetter<LightApp_DataModel> aResetter(aModel);
+      aModel->saveAs( theFileName, this, listOfFiles );
+    }
+    else {
+      aModel->saveAs( theFileName, this, listOfFiles );
+    }
     if ( !listOfFiles.isEmpty() )
       saveModuleData(aModel->module()->name(), 0, // 0 means persistence file
 		     listOfFiles);
@@ -191,7 +198,7 @@ bool LightApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/*
   bool res = saveStudyData(theFileName, 0); // 0 means persistence file
   res = res && CAM_Study::saveDocumentAs( theFileName );
   //SRN: BugID IPAL9377, removed usage of uninitialized variable <res>
-  if ( res && !isBackup)
+  if ( res && !isAutoSaving() )
     emit saved( this );
 
   return res;

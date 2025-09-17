@@ -50,7 +50,7 @@ public:
   virtual bool        loadDocument( const QString& );
 
   virtual bool        saveDocument();
-  virtual bool        saveDocumentAs( const QString&, bool isBackup=false );
+  virtual bool        saveDocumentAs( const QString& );
 
   virtual void        closeDocument(bool permanently = true);
 

@@ -596,10 +596,11 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
   Saves document
   \param theFileName - name of file
 */
-bool SalomeApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/*=false*/ )
+bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
 {
   bool wasSaved = isSaved();
   bool wasModified = isModified();
+  bool isBackup = isAutoSaving();
   std::string oldName = (studyDS() ? studyDS()->Name() : "");
   std::string oldURL = (studyDS() ? studyDS()->URL() : "");
   bool store = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", false );
@@ -616,7 +617,7 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/
     if ( LightApp_DataModel* aModel = 
          dynamic_cast<LightApp_DataModel*>( it.next() ) ) {
       listOfFiles.clear();
-      aModel->saveAs( theFileName, this, listOfFiles, isBackup );
+      aModel->saveAs( theFileName, this, listOfFiles );
       if ( !listOfFiles.isEmpty() )
         saveModuleData(aModel->module()->name(), 0, // 0 means persistence file
                        listOfFiles);
@@ -631,7 +632,7 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
   bool isAscii = resMgr->booleanValue( "Study", "ascii_file", false );
   bool res = studyDS()->SaveAs( theFileName.toUtf8().data(), isMultiFile, isAscii )
-    && CAM_Study::saveDocumentAs( theFileName, isBackup );
+    && CAM_Study::saveDocumentAs( theFileName );
 
   res = res && saveStudyData(theFileName, 0); // 0 means persistence file
 

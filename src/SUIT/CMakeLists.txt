@@ -67,6 +67,7 @@ SET(_moc_HEADERS
 # header files / no moc processing
 SET(_other_HEADERS
   SUIT.h
+  SUIT_AutoSaveResetter.h
   SUIT_CameraProperties.h
   SUIT_DataObjectIterator.h
   SUIT_DataObjectKey.h

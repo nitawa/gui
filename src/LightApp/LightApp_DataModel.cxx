@@ -74,9 +74,9 @@ bool LightApp_DataModel::save( QStringList& )
 /*!
   Emit saved()
 */
-bool LightApp_DataModel::saveAs( const QString&, CAM_Study*, QStringList&, bool isBackup/*=false*/ )
+bool LightApp_DataModel::saveAs( const QString&, CAM_Study*, QStringList& )
 {
-  if (!isBackup)
+  if (!isAutoSaving())
     emit saved();
   return true;
 }

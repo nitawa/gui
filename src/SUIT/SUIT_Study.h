@@ -60,11 +60,15 @@ public:
   virtual bool      createDocument( const QString& );
 
   bool              saveDocument();
-  virtual bool      saveDocumentAs( const QString&, bool isBackup=false );
+  virtual bool      saveDocumentAs( const QString& );
 
   virtual void      update();
 
   virtual void      sendChangesNotification();
+
+  // Autosave management
+  void              setIsAutoSaving(const bool on = true);
+  bool              isAutoSaving() const;
 
   // Operation management
   SUIT_Operation*   activeOperation() const;
@@ -113,9 +117,12 @@ private:
   bool              myIsModified;
   Operations        myOperations;
   bool              myBlockChangeState;
+  bool              myIsAutoSaving;   // whether the current study is being saved automatically
 
   friend class SUIT_Operation;
 };
+
+//******************************************************
 
 #ifdef WIN32
 #pragma warning( default:4251 )

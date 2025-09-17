@@ -53,7 +53,7 @@ public:
 
   virtual bool                        open( const QString&, CAM_Study*, QStringList );
   virtual bool                        save( QStringList& );
-  virtual bool                        saveAs( const QString&, CAM_Study*, QStringList&, bool isBackup=false );
+  virtual bool                        saveAs( const QString&, CAM_Study*, QStringList& );
   virtual bool                        close();
   virtual bool                        dumpPython( const QString&,
 						  CAM_Study*,

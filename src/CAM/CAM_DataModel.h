@@ -52,6 +52,9 @@ public:
   virtual bool     close();
   virtual bool     create( CAM_Study* );
 
+  void             setIsAutoSaving(const bool on = true);
+  bool             isAutoSaving() const;
+
 protected:
   virtual void     setRoot( const CAM_DataObject* );
 
@@ -62,8 +65,9 @@ signals:
   void             rootChanged( const CAM_DataModel* );
 
 private:
-  CAM_DataObject*  myRoot;     //!< root data object
-  CAM_Module*      myModule;   //!< module
+  CAM_DataObject*  myRoot;        //!< root data object
+  CAM_Module*      myModule;      //!< module
+  bool             myIsAutoSaving;//!< whether the data model is being saved automatically
 };
 
 #endif
