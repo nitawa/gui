@@ -48,6 +48,8 @@ void VTKViewer_DataSetMapper::Render(vtkRenderer *ren, vtkActor *act)
   if( this->PolyDataMapper == NULL )
   {
     VTKViewer_PolyDataMapper *pm = VTKViewer_PolyDataMapper::New();
+    if( this->GeometryExtractor == NULL )
+      this->GeometryExtractor = vtkDataSetSurfaceFilter::New();
     pm->SetInputConnection(this->GeometryExtractor->GetOutputPort());
 
     pm->SetMarkerEnabled( this->MarkerEnabled );
