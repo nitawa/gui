@@ -21,7 +21,9 @@
 #include "VTKViewer_PolyDataMapper.h"
 
 #include <vtkDataSetSurfaceFilter.h>
+#include <vtkGeometryFilter.h>
 #include <vtkObjectFactory.h>
+#include <vtkVersion.h>
 
 vtkStandardNewMacro(VTKViewer_DataSetMapper)
 
@@ -49,7 +51,13 @@ void VTKViewer_DataSetMapper::Render(vtkRenderer *ren, vtkActor *act)
   {
     VTKViewer_PolyDataMapper *pm = VTKViewer_PolyDataMapper::New();
     if( this->GeometryExtractor == NULL )
+    {
+#if VTK_VERSION_NUMBER > VTK_VERSION_CHECK(9, 5, 20250809)
+      this->GeometryExtractor = vtkGeometryFilter::New();
+#else
       this->GeometryExtractor = vtkDataSetSurfaceFilter::New();
+#endif
+    }
     pm->SetInputConnection(this->GeometryExtractor->GetOutputPort());
 
     pm->SetMarkerEnabled( this->MarkerEnabled );
@@ -59,7 +67,7 @@ void VTKViewer_DataSetMapper::Render(vtkRenderer *ren, vtkActor *act)
       pm->SetMarkerTexture( this->MarkerId, this->MarkerTexture );
     pm->SetBallEnabled( this->BallEnabled );
     pm->SetBallScale( this->BallScale );
-    
+
     this->PolyDataMapper = pm;
   }
   vtkDataSetMapper::Render(ren, act);
@@ -73,7 +81,6 @@ void VTKViewer_DataSetMapper::SetMarkerEnabled( bool theMarkerEnabled )
     if( VTKViewer_PolyDataMapper* aMapper = dynamic_cast<VTKViewer_PolyDataMapper*>( this->PolyDataMapper ) )
       aMapper->SetMarkerEnabled( theMarkerEnabled );
 }
-
 
 //-----------------------------------------------------------------------------
 void VTKViewer_DataSetMapper::SetBallEnabled( bool theBallEnabled )
