@@ -1992,7 +1992,17 @@ bool SalomeApp_Application::updateStudy()
     ip->setDumpPython();
     savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
   }
-  bool ok = getStudy()->DumpStudy( aTmpDir.toStdString(), aScriptName.toStdString(), toPublish, isMultiFile );
+  bool ok = false;
+  {
+    SUIT_OverrideCursor wc;
+    ensureShaperIsActivated();
+    QString fullFileName = aTmpDir + QDir::separator() + aScriptName + ".py";
+    SalomeApp_Study* appStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+    if ( appStudy )
+      ok = appStudy->dump( fullFileName, toPublish, isMultiFile, true );
+    else
+      ok = getStudy()->DumpStudy( aTmpDir.toStdString(), aScriptName.toStdString(), toPublish, isMultiFile );
+  }
   if ( toSaveGUI )
     study->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
 

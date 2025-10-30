@@ -287,7 +287,7 @@ bool NoteBook_TableRow::IsValidStringValue(const QString /*theValue*/)
   PyConsole_Console* pyConsole = app->pythonConsole();
   PyConsole_Interp* pyInterp = app->getPyInterp();
   PyLockWrapper aLock; // Acquire GIL
-  std::string command = "import salome_notebook ; ";
+  std::string command = "from salome.kernel import salome_notebook ; ";
   command += "salome_notebook.checkThisNoteBook(";
   for( int i = 0, n = aLastRowIsEmpty ? aNumRows - 1 : aNumRows; i < n; i++ ) {
     command += myParentTable->myRows[i]->GetName().toStdString();
@@ -459,7 +459,7 @@ bool NoteBook_Table::IsValid() const
   PyConsole_Console* pyConsole = app->pythonConsole();
   PyConsole_Interp* pyInterp = app->getPyInterp();
   PyLockWrapper aLock; // Acquire GIL
-  std::string command = "import salome_notebook ; ";
+  std::string command = "from salome.kernel import salome_notebook ; ";
   command += "salome_notebook.checkThisNoteBook(";
   for( int i = 0, n = aLastRowIsEmpty ? aNumRows - 1 : aNumRows; i < n; i++ )
     {
