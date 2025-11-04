@@ -25,7 +25,7 @@
 // Created:   November, 2004
 //
 #include "GLViewer_CoordSystem.h"
-#include <math.h>
+#include <cmath>
 
 /*!
   Constructor

@@ -30,7 +30,7 @@
 #include <QShowEvent>
 #include <QVectorIterator>
 
-#include <math.h>
+#include <cmath>
 
 /*!
   \class QtxAbstractRubberBand

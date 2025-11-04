@@ -22,15 +22,9 @@
 
 #include "SUIT_DataObjectKey.h"
 
-#include <string.h>
-
-#ifndef WIN32
+#include <cstring>
 #include <typeinfo>
 #define _typeinfo std::type_info
-#else
-#include <typeinfo.h>
-#define _typeinfo type_info
-#endif
 
 /*!\class SUIT_DataObjectKey
  * Key for personal idetfication of SUIT_DataObject.

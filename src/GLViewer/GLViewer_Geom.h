@@ -31,7 +31,7 @@
 
 #include <QRect>
 #include <QtOpenGL>
-#include <math.h>
+#include <cmath>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )

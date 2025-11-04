@@ -33,7 +33,7 @@
 #endif
 
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 /*!
   Constructor

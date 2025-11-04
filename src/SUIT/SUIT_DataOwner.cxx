@@ -22,13 +22,8 @@
 
 #include "SUIT_DataOwner.h"
 
-#ifndef WIN32
 #include <typeinfo>
 #define _typeinfo std::type_info
-#else
-#include <typeinfo.h>
-#define _typeinfo type_info
-#endif
 
 /*! Constructor*/
 SUIT_DataOwner::SUIT_DataOwner()
