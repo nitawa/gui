@@ -103,6 +103,13 @@ public:
                                         SUIT_FileValidator* = 0 );
   static QStringList  getOpenFileNames( QWidget*, 
                                         const QString&,
+                                        const QStringList&, 
+                                        QString&, 
+                                        const QString& = QString(),
+                                        const bool = true, 
+                                        SUIT_FileValidator* = 0 );
+  static QStringList  getOpenFileNames( QWidget*, 
+                                        const QString&,
                                         const QString&, 
                                         const QString& = QString(),
                                         const bool = true, 
