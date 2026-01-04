@@ -19,7 +19,11 @@
 # Author : Guillaume Boulant (EDF)
 
 import sys
-from qtsalome import *
+if SalomePyQt.UsePySide():
+  from PySide2.QtCore import Qt
+  from PySide2.QtWidgets import QDialog, QDialogButtonBox, QApplication
+else:
+  from PyQt5.Qt import *
 
 from tubedialog_ui import TubeDialog_UI
 

@@ -17,7 +17,8 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-INCLUDE(UsePyQt)
+INCLUDE(SalomeQtPythonBindings)
+SALOME_SETUP_QT_PYTHON_BINDINGS()
 
 # --- resources ---
 
@@ -31,8 +32,7 @@ SET(_pyuic_FILES
 # --- scripts ---
 
 # scripts / pyuic wrappings
-PYQT_WRAP_UIC(_pyuic_SCRIPTS ${_pyuic_FILES} TARGET_NAME _target_name_pyuic)
-
+SALOME_WRAP_UIC(_pyuic_SCRIPTS ${_pyuic_FILES} TARGET_NAME _target_name_pyuic)
 # scripts / static
 SET(_other_SCRIPTS 
   genericdialog.py

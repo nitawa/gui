@@ -19,8 +19,14 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-from pyqtside import QtWidgets, QtCore
-from pyqtside.QtCore import QObject
+from pyqtside import _usepyqt
+if _usepyqt:
+  from pyqtside import QtWidgets, QtCore
+  from pyqtside.QtCore import QObject
+else:
+  from PySide2 import QtWidgets, QtCore
+  from PySide2.QtCore import QObject
+
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 

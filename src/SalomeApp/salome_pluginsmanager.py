@@ -44,7 +44,10 @@ name salome_plugins.py (example follows)::
   import salome_pluginsmanager
 
   def about(context):
-    from qtsalome import QMessageBox
+    if SalomePyQt.usePySide():
+      from PySide2.QtWidgets import QMessageBox
+    else:
+      from PyQtt5.Qt import QMessageBox
     QMessageBox.about(None, "About SALOME pluginmanager", "SALOME plugins manager in SALOME virtual application ")
 
   salome_pluginsmanager.AddFunction('About plugins','About SALOME pluginmanager',about)
@@ -82,7 +85,12 @@ context attributes:
 """
 
 import os,sys,traceback
-from qtsalome import *
+# Get SALOME PyQt interface
+import SalomePyQt
+if SalomePyQt.usePySide():
+  from PySide2.QtWidgets import QMenu, QApplication, QMessageBox
+else:
+  from PyQt5.Qt import *
 
 import salome
 
@@ -90,8 +98,6 @@ SEP=":"
 if sys.platform == "win32":
   SEP = ";"
 
-# Get SALOME PyQt interface
-import SalomePyQt
 sgPyQt = SalomePyQt.SalomePyQt()
 
 # Get SALOME Swig interface

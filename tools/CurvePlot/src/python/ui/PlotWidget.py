@@ -17,8 +17,14 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-from pyqtside import QtWidgets
-from pyqtside.uic import loadUiGen
+from pyqtside import _usepyqt
+if _usepyqt:
+  from pyqtside import QtWidgets
+  from pyqtside.uic import loadUiGen
+else:
+  from PySide2 import QtWidgets
+  from PySide2.uic import loadUiGen
+
 from .utils import completeResPath
 
 class PlotWidget(QtWidgets.QMainWindow):

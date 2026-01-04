@@ -20,7 +20,18 @@
 # Author : Guillaume Boulant (EDF)
 
 import sys
-from qtsalome import *
+if SalomePyQt.UsePySide():
+  from PySide2.QtWidgets import (QDialog, 
+                                 QHBoxLayout,
+                                 QVBoxLayout,
+                                 QLabel,
+                                 QLineEdit,
+                                 QSpacerItem,
+                                 QSizePolicy,
+                                 QDialogButtonBox,
+                                 QApplication)
+else:
+  from PyQt5.Qt import *
 
 
 class TubeDialog_UI(QDialog):

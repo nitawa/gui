@@ -19,30 +19,14 @@
 
 from . import _use_pyqt
 if _use_pyqt:
-  from PyQt5.QtGui import *
-
-  # Make QVariant invisible in PyQt5 since they don't exist in
-  # PySide ...
-#  __original_itemData = QComboBox.itemData
-#  def new_itemData(*args, **kargs):
-#    from PyQt5.QtCore import QVariant
-#    variant = __original_itemData(*args, **kargs)
-#    funcS = lambda : (str(variant.toString()), True)
-#    dico = {QVariant.Int: variant.toInt, QVariant.String: funcS,
-#     QVariant.Bool: variant.toBool, QVariant.Double: variant.toDouble}
-#    conv = dico.get(variant.type(), None)
-#    if conv is None:
-#      raise Exception("Unsupported variant type in pyqtside: '%s'!" % variant.typeName())
-#    return conv()[0]
-#
-#  QComboBox.itemData = new_itemData 
+  from PyQt5.QtGui import * 
 else:
-  from PySide.QtGui import *
+  from PySide2.QtGui import *
 
   __original_ofn = QFileDialog.getOpenFileName
   __original_sfn = QFileDialog.getSaveFileName
 
-  # In PySide, getOpenFileName and co returns 2 values, and only one in PyQt ...
+  # In PySide2, getOpenFileName and co returns 2 values, and only one in PyQt ...
   def newOfn(cls,*args, **kargs):
     tup = __original_ofn(*args, **kargs)
     return tup[0]

@@ -131,9 +131,11 @@ For Python modules, *Help panel* can be accessed via the ``SalomePyQt`` Python m
 
 .. code-block:: python
 
-    from PyQt5 import Qt as Q
+    if SalomePyQt.usePySide():
+      from PySide2.QtCore import Qt as Q
+    else:
+      from PyQt5 import Qt as Q
     from SalomePyQt import SalomePyQt as sg
-
     # Set panel's title (put empty string to hide title)
     sg.infoSetTitle("Welcome to my module")
 

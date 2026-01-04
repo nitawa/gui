@@ -20,8 +20,13 @@
 # Author : A. Bruneton
 #
 
-from pyqtside.QtCore import Qt, QTimer, pyqtSlot
-from pyqtside.QtWidgets import QMainWindow,QMenu
+from pyqtside import _use_pyqt
+if _use_pyqt:
+  from pyqtside.QtCore import Qt, QTimer, pyqtSlot
+  from pyqtside.QtWidgets import QMainWindow,QMenu
+else:
+  from PySide2.QtCore import Qt, QTimer, pyqtSlot
+  from PySide2.QtWidgets import QMainWindow,QMenu
 import numpy as np
 
 import curveplot
@@ -192,9 +197,6 @@ class TestDesktop(QMainWindow):
       
     def addTab(self):
       pass
-#      from PyQt5.QtWidgets import QPushButton
-#      self.qp = QPushButton("Hi!")
-#      self._sgPyQt.createView("Dummy", self.qp)  
       
     def plotTable(self):
       from curveplot import TableModel

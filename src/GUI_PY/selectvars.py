@@ -21,8 +21,11 @@
 #
 
 import os
-
-from qtsalome import *
+if SalomePyQt.usePySide():
+    from PySide2.QtWidgets import QDialog, QMessageBox, QListWidgetItem, QFileDialog
+    from PySide2.QtCore import Qt
+else:
+    from PyQt5.Qt import *
 
 import salome
 from salome.kernel.studyedit import getStudyEditor

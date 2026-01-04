@@ -41,6 +41,20 @@ class PYCONSOLE_EXPORT PyConsole_Console : public QWidget
 
 public:
   //! Context popup menu actions flags
+#if defined (__SALOME_USE_PYSIDE__)
+  enum MenuAction
+  {
+    CopyId         = 0x01,  //!< "Copy" menu action
+    PasteId        = 0x02,  //!< "Paste" menu action
+    ClearId        = 0x04,  //!< "Clear" menu action
+    SelectAllId    = 0x08,  //!< "Select All" menu action
+    DumpCommandsId = 0x10,  //!< "DumpCommands" menu action
+    StartLogId     = 0x20,  //!< "Start log" menu action
+    StopLogId      = 0x40,  //!< "Stop log" menu action
+    All            = 0xFF,  //!< all menu actions 
+  };
+  Q_ENUM(MenuAction)
+#else
   enum
   {
     CopyId         = 0x01,  //!< "Copy" menu action
@@ -52,7 +66,7 @@ public:
     StopLogId      = 0x40,  //!< "Stop log" menu action
     All            = 0xFF,  //!< all menu actions 
   };
-
+#endif // __SALOME_USE_PYSIDE__
 public:
   PyConsole_Console( QWidget* = 0 );
   PyConsole_Console( QWidget*, PyConsole_Editor* );

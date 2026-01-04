@@ -78,7 +78,11 @@ class Logger(object):
       
 def trQ(tag, context="CURVEPLOT"):
   """ @return a QString read from the translation file """
-  from pyqtside.QtWidgets import QApplication 
+  import os
+  if 'PYSIDE_ROOT_DIR' in os.environ:
+    from PySide2.QtWidgets import QApplication
+  else:
+    from pyqtside.QtWidgets import QApplication 
   return QApplication.translate(context, tag) 
 
 def trU(tag, context="CURVEPLOT"):

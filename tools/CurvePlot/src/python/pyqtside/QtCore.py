@@ -23,4 +23,4 @@ if _use_pyqt:
   Slot = pyqtSlot
   Signal = pyqtSignal
 else:
-  from PySide.QtCore import *
+  from PySide2.QtCore import *

@@ -23,14 +23,14 @@ Group under one hat PySide and PyQt5. PyQt5 is tried first.
 
 try:
   import os
-  if os.getenv("CURVEPLOT_FORCE_PYSIDE") is not None:
-    raise Exception
+  if 'SALOME_USE_PYSIDE' in os.environ:
+    raise Exception # exception generated on purpose
   import PyQt5
   _use_pyqt = True
   print("Using PyQt5 run-time ...")
 except:
   try:
-    import PySide
+    import PySide2
     _use_pyqt = False
     print("Using PySide run-time ...")
   except:
@@ -41,7 +41,7 @@ except:
 try: 
   import matplotlib
   if _use_pyqt:  back = 'PyQt5'
-  else:          back = 'PySide'
+  else:          back = 'PySide2'
   # As advised by MatPlotlib:
   #   "The backend.qt5 rcParam was deprecated in version 2.2.  In order to force the use of a specific Qt binding, either import that binding first, or set the QT_API environment variable.
   #   mplDeprecation)"

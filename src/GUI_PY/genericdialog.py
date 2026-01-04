@@ -18,7 +18,12 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-from qtsalome import QDialog, QMessageBox
+import sys
+import SalomePyQt
+if SalomePyQt.usePySide():
+    from PySide2.QtWidgets import QDialog, QMessageBox, QApplication
+else:
+    from PyQt5.Qt import QDialog, QMessageBox, QApplication
 from salome.gui.genericdialog_ui import Ui_GenericDialog
 
 
@@ -109,8 +114,6 @@ class GenericDialog(QDialog):
 # ==============================================================================
 #
 def TEST_GenericDialog():
-    import sys
-    from qtsalome import QApplication
     app = QApplication(sys.argv)
     app.lastWindowClosed.connect(app.quit)
 

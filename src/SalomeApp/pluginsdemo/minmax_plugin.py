@@ -19,7 +19,12 @@
 #
 # Author : Guillaume Boulant (EDF)
 
-from qtsalome import *
+import SalomePyQt
+if SalomePyQt.usePySide():
+  from PySide2.QtCore import Qt
+  from PySide2.QtWidgets import QDialog, QMessageBox
+else:
+  from PyQt5.Qt import *
 
 def minmax(context):
   # get context study, salomeGui
@@ -71,6 +76,20 @@ def minmax(context):
     "MultiConnection",
     ]
 
+  def connectOnSelectionChangedEvent(s):
+    if SalomePyQt.usePySide():
+      sg.getObjectBrowser().selectionModel().selectionChanged.connect(s)
+    else:
+      sg.getObjectBrowser().selectionChanged.connect(s)
+    return
+
+  def disconnectOnSelectionChangedEvent(s):
+    if SalomePyQt.usePySide():
+      sg.getObjectBrowser().selectionModel().selectionChanged.disconnect(s)
+    else:
+      sg.getObjectBrowser().selectionChanged.disconnect(s)
+    return
+
   class MinmaxDialog(QDialog):
     def __init__(self):
       QDialog.__init__(self, None, Qt.Tool)
@@ -82,7 +101,7 @@ def minmax(context):
       self.clearLineEdit()
 
       # Connect up the selectionChanged() event of the object browser.
-      sg.getObjectBrowser().selectionChanged.connect(self.select)
+      connectOnSelectionChangedEvent(self.select)
 
       self.mm = None
       self.ui.control.setFocus()
@@ -91,7 +110,7 @@ def minmax(context):
       pass
 
     def OnCancel(self):
-      sg.getObjectBrowser().selectionChanged.disconnect(self.select)
+      disconnectOnSelectionChangedEvent(self.select)
       self.reject()
       pass
 
@@ -102,7 +121,7 @@ def minmax(context):
       self.ui.maxvalue.setText("")
 
     def select(self):
-      sg.getObjectBrowser().selectionChanged.disconnect(self.select)
+      disconnectOnSelectionChangedEvent(self.select)
       self.ui.minvalue.setText("")
       self.ui.maxvalue.setText("")
       objId = salome.sg.getSelected(0)
@@ -138,7 +157,7 @@ def minmax(context):
             self.ui.control.clear()
             self.ui.control.addItems(controls)
           self.compute_minmax()
-      sg.getObjectBrowser().selectionChanged.connect(self.select)
+      connectOnSelectionChangedEvent(self.select)
       pass
 
     def helpMessage(self):

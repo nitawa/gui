@@ -499,3 +499,8 @@ public:
   static void              logAction( QAction*, const QString& = QString() ) /ReleaseGIL/ ;
   static void              setActionLoggingEnabled( bool ) /ReleaseGIL/ ;
 };
+
+bool usePySide();
+%MethodCode
+    sipRes = false;
+%End

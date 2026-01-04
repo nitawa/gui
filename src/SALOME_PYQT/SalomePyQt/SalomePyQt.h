@@ -31,7 +31,7 @@
 #include <QObject>
 #include <QString>
 #include <QColor>
-
+#include <QAction>
 #include <LightApp_Application.h>
 #ifndef GUI_DISABLE_CORBA
 #include <SalomeApp_Application.h>
@@ -52,7 +52,17 @@ class QtxActionGroup;
 class Plot2d_Curve;
 #endif
 
-class SALOME_Selection : public QObject
+#if defined(_WIN32) && defined(__SALOME_USE_PYSIDE__)
+  #ifdef SalomePyQt_EXPORTS
+    #define SalomePyQt_EXPORT __declspec(dllexport)
+  #else
+    #define SalomePyQt_EXPORT __declspec(dllimport)
+  #endif
+#else
+    #define SalomePyQt_EXPORT
+#endif
+
+class SalomePyQt_EXPORT SALOME_Selection : public QObject
 {
   Q_OBJECT
 
@@ -122,7 +132,7 @@ enum {
   PT_UserDefined  = LightApp_Preferences::UserDefined,
 };
 
-class UserDefinedContent: public QWidget
+class SalomePyQt_EXPORT UserDefinedContent: public QWidget
 {
   Q_OBJECT
 
@@ -176,7 +186,7 @@ enum Axis {
 };
 #endif
 
-class SalomePyQt
+class SalomePyQt_EXPORT SalomePyQt
 {
 public:
   static QString           getAppName();

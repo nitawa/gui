@@ -17,9 +17,15 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-from pyqtside import QtWidgets
-from pyqtside.QtWidgets import QMenu
-from pyqtside.QtCore import Qt
+from pyqtside import _usepyqt
+if _use_pyqt:
+  from pyqtside import QtWidgets
+  from pyqtside.QtWidgets import QMenu
+  from pyqtside.QtCore import Qt
+else:
+  from PySide2 import QtWidgets
+  from PySide2.QtWidgets import QMenu
+  from PySide2.QtCore import Qt
 
 from .View import View
 from .CurveTreeDockWidget import CurveTreeDockWidget

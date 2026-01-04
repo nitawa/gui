@@ -18,7 +18,12 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-from qtsalome import *
+import sys
+if SalomePyQt.usePySide():
+    from PySide2.QtCore import QObject, Signal
+    from PySide2.QtWidgets import QApplication
+else:
+    from PyQt5.Qt import *
 from salome.gui.genericdialog import GenericDialog
 from salome.gui.mytestdialog_ui import Ui_MyTestDialog
 
@@ -77,7 +82,10 @@ class MyTestDialogWithSignals(MyTestDialog):
     controller must be warn of close events using Qt signals.
     """
 
-    inputValidated = pyqtSignal()
+    if SalomePyQt.usePySide():
+        inputValidated = Signal(str)
+    else:
+        inputValidated = pyqtSignal()
 
     def __init__(self, parent=None, name="MyTestDialogWithSignals"):
         MyTestDialog.__init__(self, parent, name)
@@ -104,8 +112,6 @@ class MyTestDialogWithSignals(MyTestDialog):
 #
 
 def TEST_MyTestDialog_modal():
-    import sys
-    from qtsalome import QApplication
     app = QApplication(sys.argv)
     app.lastWindowClosed.connect(app.quit)
 
@@ -120,12 +126,10 @@ def TEST_MyTestDialog_modal():
 class DialogListener:
     def onProcessEvent(self):
         print("onProcessEvent(): OK has been pressed")
-        import sys
         sys.exit(0)
         
 
 def TEST_MyTestDialog_non_modal():
-    import sys
     app = QApplication(sys.argv)
     app.lastWindowClosed.connect(app.quit)
 

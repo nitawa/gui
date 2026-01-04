@@ -38,8 +38,12 @@ class PYEDITOR_EXPORT PyEditor_Editor : public QPlainTextEdit
   Q_OBJECT
 
 public:
+#if defined(__SALOME_USE_PYSIDE__)
+  enum CompletionPolicy { None, Auto, Manual, Always };
+  Q_ENUM(CompletionPolicy)
+#else
   typedef enum { None, Auto, Manual, Always } CompletionPolicy;
-
+#endif // __SALOME_USE_PYSIDE__
 public:
   PyEditor_Editor( QWidget* = 0 );
   virtual ~PyEditor_Editor();

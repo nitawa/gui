@@ -20,13 +20,22 @@
 # Author : A. Bruneton
 #
 import unittest, sys, os, filecmp, shutil, tempfile
-from pyqtside.QtWidgets import QApplication
-from pyqtside.QtGui import QPixmap, QPainter
-from pyqtside.QtCore import QTimer
 
+import os
+from pyqtside import _use_pyqt
+if _use_pyqt:
+  from pyqtside.QtWidgets import QApplication
+  from pyqtside.QtGui import QPixmap, QPainter
+  from pyqtside.QtCore import QTimer
+  from PyQt5.Qt import QMainWindow
+else:
+  from PySide2.QtWidgets import QApplication
+  from PySide2.QtGui import QPixmap, QPainter
+  from PySide2.QtCore import QTimer
+  from PySide2.Qt import QMainWindow
 from curveplot.PlotController import PlotController
 from curveplot.XYView import XYView
-from PyQt5.Qt import QMainWindow
+
 
 def runOnly(func):
   func.__runOnly__ = True

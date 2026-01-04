@@ -50,7 +50,14 @@
 
 #include <utilities.h>
 
-#include "sipAPISalomePyQtGUILight.h"
+#if defined(__SALOME_USE_PYSIDE__)
+  #include "sbkconverter.h"
+  #include "sbkmodule.h"
+  #include "sbkpython.h"
+  #include "shiboken.h"
+#else
+  #include "sipAPISalomePyQtGUILight.h"
+#endif
 
 /*!
   \brief Default menu group number.
@@ -1843,12 +1850,18 @@ void PyModuleHelper::setWorkSpace()
     if ( d )
       aWorkspace = d->workstack();
   }
-#if SIP_VERSION >= 0x041300
+#if defined(__SALOME_USE_PYSIDE__)
+  SbkObjectType* sbkType = Shiboken::ObjectType::typeForTypeName(typeid(QWidget).name());
+  PyObjWrapper pyws      = Shiboken::Conversions::pointerToPython(sbkType, aWorkspace);
+#else
+  #if SIP_VERSION >= 0x041300
   static const sipTypeDef *sipType_QWidget = 0;
   if (!sipType_QWidget)
     sipType_QWidget = sipFindType("QWidget");
-#endif
+  #endif // SIP_VERSION
   PyObjWrapper pyws( sipBuildResult( 0, "D", aWorkspace, sipType_QWidget , NULL) );
+#endif //__SALOME_USE_PYSIDE
+
   // ... and finally call Python module's setWorkSpace() method (obsolete)
   if ( PyObject_HasAttrString( myPyModule, (char*)"setWorkSpace" ) ) {
     PyObjWrapper res( PyObject_CallMethod( myPyModule, (char*)"setWorkSpace", (char*)"O", pyws.get() ) );
@@ -1923,6 +1936,8 @@ void PyModuleHelper::internalInitialize( CAM_Application* app )
       PyErr_Print();
     }
     else {
+#define PyObject_IsEnum(obj,enumtype) ((strcmp(Py_TYPE(obj)->tp_name, enumtype) == 0) && (PyLong_AsLong(obj) != -1))
+
       myWindowsMap.clear();
       if ( PyDict_Check( res1 ) ) {
         PyObject* key;
@@ -1930,9 +1945,9 @@ void PyModuleHelper::internalInitialize( CAM_Application* app )
         Py_ssize_t pos = 0;
         while ( PyDict_Next( res1, &pos, &key, &value ) ) {
           // parse the return value
-          // it should be a map: {integer:integer}
+          // it should be a map: {integer:integer} or {integer:PySide2.QtCore.Qt.DockWidgetArea}
           int aKey, aValue;
-          if( key && PyLong_Check( key ) && value && PyLong_Check( value ) ) {
+          if( key && PyLong_Check( key ) && value && (PyLong_Check( value ) || PyObject_IsEnum( value, "PySide2.QtCore.Qt.DockWidgetArea" )) ) {
             aKey   = PyLong_AsLong( key );
             aValue = PyLong_AsLong( value );
             myWindowsMap[ aKey ] = aValue;
@@ -2260,17 +2275,21 @@ void PyModuleHelper::internalSelectionUpdated(const QStringList& entries)
 
   QStringList* theList = new QStringList(entries);
 
-#if SIP_VERSION >= 0x041300
+#if defined(__SALOME_USE_PYSIDE__)
+  SbkObjectType* sbkType = Shiboken::ObjectType::typeForTypeName(typeid(QStringList).name());
+  PyObjWrapper pyList   = Shiboken::Conversions::pointerToPython(sbkType, theList);
+#else
+  #if SIP_VERSION >= 0x041300
   static const sipTypeDef *sipType_QStringList = 0;
   if (!sipType_QStringList)
     sipType_QStringList = sipFindType("QStringList");
-#endif
-  PyObjWrapper sipList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL ) );
+  #endif // SIP_VERSION
+  PyObjWrapper pyList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL ) );
+#endif // __SALOME_USE_PYSIDE__
   if (PyObject_HasAttrString(myPyModule, (char*) "onSelectionUpdated"))
     {
       MESSAGE("call onSelectionUpdated");
-      PyObjWrapper res(PyObject_CallMethod(myPyModule, (char*) "onSelectionUpdated", (char*) "O", sipList.get()));
-
+      PyObjWrapper res(PyObject_CallMethod(myPyModule, (char*) "onSelectionUpdated", (char*) "O", pyList.get()));
       if (!res)
         {
           PyErr_Print();
@@ -2334,19 +2353,23 @@ void PyModuleHelper::internalContextMenu( const QString& context, QMenu* menu )
   if ( myXmlHandler )
     myXmlHandler->createPopup( menu, aContext, aParent, aObject );
 
-#if SIP_VERSION >= 0x041300
+#if defined(__SALOME_USE_PYSIDE__)
+  SbkObjectType* sbkType = Shiboken::ObjectType::typeForTypeName(typeid(QMenu).name());
+  PyObjWrapper pyPopup  = Shiboken::Conversions::pointerToPython(sbkType, menu);
+#else
+  #if SIP_VERSION >= 0x041300
   static const sipTypeDef *sipType_QMenu = 0;
   if (!sipType_QMenu)
-    sipType_QMenu = sipFindType("QMenu");
-#endif
-  PyObjWrapper sipPopup( sipBuildResult( 0, "D", menu, sipType_QMenu, NULL ) );
-
+    sipType_QMenu = sipFindType("QMenu");  
+  #endif // SIP_VERSION
+  PyObjWrapper pyPopup( sipBuildResult( 0, "D", menu, sipType_QMenu, NULL ) );
+#endif // __SALOME_USE_PYSIDE__
   // then call Python module's createPopupMenu() method (for new modules)
   if ( PyObject_HasAttrString( myPyModule, (char*)"createPopupMenu" ) ) {
     PyObjWrapper res1( PyObject_CallMethod( myPyModule,
                                             (char*)"createPopupMenu",
                                             (char*)"Os",
-                                            sipPopup.get(),
+                                            pyPopup.get(),
                                             context.toUtf8().constData() ) );
     if( !res1 ) {
       PyErr_Print();
@@ -2359,7 +2382,7 @@ void PyModuleHelper::internalContextMenu( const QString& context, QMenu* menu )
     PyObjWrapper res2( PyObject_CallMethod( myPyModule,
                                             (char*)"customPopup",
                                             (char*)"Osss",
-                                            sipPopup.get(),
+                                            pyPopup.get(),
                                             aContext.toUtf8().constData(),
                                             aObject.toUtf8().constData(),
                                             aParent.toUtf8().constData() ) );
@@ -2554,24 +2577,28 @@ void PyModuleHelper::internalLoad( const QStringList& files, const QString& url,
     return;
 
   QStringList* theList = new QStringList( files );
-
-#if SIP_VERSION >= 0x041300
+#if defined(__SALOME_USE_PYSIDE__)
+  SbkObjectType* sbkType = Shiboken::ObjectType::typeForTypeName(typeid(QStringList).name());
+  PyObjWrapper pyList   = Shiboken::Conversions::pointerToPython(sbkType, theList);
+#else
+  #if SIP_VERSION >= 0x041300
   static const sipTypeDef *sipType_QStringList = 0;
   if (!sipType_QStringList)
     sipType_QStringList = sipFindType("QStringList");
-#endif
-  PyObjWrapper sipList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL ) );
+  #endif // SIP_VERSION
+  PyObjWrapper pyList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL ) );
+#endif // __SALOME_USE_PYSIDE__
   if ( PyObject_HasAttrString(myPyModule , (char*)"openFiles") ) {
 
     // try with two parameters (new syntax)
     PyObjWrapper res( PyObject_CallMethod( myPyModule, (char*)"openFiles",
-                                           (char*)"Os", sipList.get(),
+                                           (char*)"Os", pyList.get(),
                                            url.toUtf8().constData() ) );
 
     if ( !res )
       // try with single parameter (old syntax)
       res = PyObject_CallMethod( myPyModule, (char*)"openFiles",
-                                 (char*)"O", sipList.get() );
+                                 (char*)"O", pyList.get() );
 
     if ( !res || !PyBool_Check( res ) ) {
       PyErr_Print();
@@ -2719,15 +2746,20 @@ void PyModuleHelper::internalDropObjects( const DataObjectList& what, SUIT_DataO
     if ( dataObject ) theList->append( dataObject->entry() );
   }
 
-#if SIP_VERSION >= 0x041300
+#if defined(__SALOME_USE_PYSIDE__)
+  SbkObjectType* sbkType = Shiboken::ObjectType::typeForTypeName(typeid(QStringList).name());
+  PyObjWrapper pyList   = Shiboken::Conversions::pointerToPython(sbkType, theList);
+#else
+  #if SIP_VERSION >= 0x041300
   static const sipTypeDef *sipType_QStringList = 0;
   if (!sipType_QStringList)
     sipType_QStringList = sipFindType("QStringList");
-#endif
-  PyObjWrapper sipList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL) );
+  #endif // SIP_VERSION
+  PyObjWrapper pyList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL) );
+#endif //__SALOME_USE_PYSIDE__
   if ( PyObject_HasAttrString(myPyModule, (char*)"dropObjects") ) {
       PyObjWrapper res( PyObject_CallMethod( myPyModule, (char*)"dropObjects", (char*)"Osii",
-                        sipList.get(),
+                        pyList.get(),
                         whereObject->entry().toUtf8().constData(),
                         row, action ) );
     

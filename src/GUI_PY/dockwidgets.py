@@ -17,7 +17,10 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-from qtsalome import *
+if SalomePyQt.usePySide():
+    from PySide2.QtWidgets import QDockWidget
+else:
+    from PyQt5.Qt import *
 
 import SalomePyQt
 

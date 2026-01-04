@@ -36,11 +36,18 @@ class PYEDITOR_EXPORT PyEditor_Window : public QMainWindow
   Q_OBJECT
 
 public:
+#if defined(__SALOME_USE_PYSIDE__)
+  enum WindowAction { NewId, OpenId, SaveId, SaveAsId, ExitId,
+         UndoId, RedoId, CutId, CopyId, PasteId, DeleteId, SelectAllId,
+         FindId, ReplaceId,
+         PreferencesId, HelpId };
+  Q_ENUM(WindowAction)
+#else
   enum { NewId, OpenId, SaveId, SaveAsId, ExitId,
          UndoId, RedoId, CutId, CopyId, PasteId, DeleteId, SelectAllId,
          FindId, ReplaceId,
          PreferencesId, HelpId };
-
+#endif // __SALOME_USE_PYSIDE__
   PyEditor_Window( QWidget* = 0 );
   ~PyEditor_Window();
 

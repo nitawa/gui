@@ -2,8 +2,8 @@
     How to load a user interface dynamically with PySide.
     .. moduleauthor::  Sebastian Wiesner  <lunaryorn@gmail.com>
 """
-from PySide.QtCore import Slot, QMetaObject
-from PySide.QtUiTools import QUiLoader
+from PySide2.QtCore import Slot, QMetaObject
+from PySide2.QtUiTools import QUiLoader
 
 class UiLoader(QUiLoader):
     """

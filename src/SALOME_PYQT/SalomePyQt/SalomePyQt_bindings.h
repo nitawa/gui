@@ -1,4 +1,7 @@
-// Copyright (C) 2007-2026  CEA, EDF, OPEN CASCADE
+// Copyright (C) 2007-2023  CEA, EDF, OPEN CASCADE
+//
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,33 +20,34 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-// File   : SALOME_PYQT_GUI.h
-// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+// File   : SalomePyQt_bindings.h
+// Author : Konstantin LEONTEV
 //
-#if !defined ( SALOME_PYQT_GUILIGHT_H )
-#define SALOME_PYQT_GUILIGHT_H
 
-// ========================================================
-// set dllexport type for Win platform 
-#ifdef WIN32
+#ifndef SALOME_PYQT_BINDINGS_H
+#define SALOME_PYQT_BINDINGS_H
 
-#if defined SALOME_PYQT_LIGHT_EXPORTS || defined SalomePyQtGUILight_EXPORTS
-#define SALOME_PYQT_LIGHT_EXPORT __declspec(dllexport)
-#else
-#define SALOME_PYQT_LIGHT_EXPORT __declspec(dllimport)
-#endif
+#ifdef _WIN32
+  #include <windows.h>
+  #define _OMNIORB_HOST_BYTE_ORDER_ 1
+#endif // _WIN32
 
-#else   // WIN32
+#include "pyside.h"
+#include "sbkconverter.h"
+#include "sbkmodule.h"
+#include "sbkpython.h"
 
-#define SALOME_PYQT_LIGHT_EXPORT
+#include <QtCore/QCborStreamReader>
 
-#endif  // WIN32
+#include <qwt_plot.h>
+#include <qwt_plot_item.h>
+#include <qwt_symbol.h>
 
-// ========================================================
-// avoid warning messages
-#ifdef WIN32
-#pragma warning (disable : 4786)
-#pragma warning (disable : 4251)
-#endif
-
-#endif // SALOME_PYQT_GUILIGHT_H
+#include "Plot2d_Object.h"
+#include "Plot2d_Curve.h"
+#include "QtxActionGroup.h"
+#include "QtxActionSet.h"
+#include "QtxAction.h"
+#include "LightApp_SelectionMgr.h"
+#include "SalomePyQt.h"
+#endif // SALOME_PYQT_BINDINGS_H

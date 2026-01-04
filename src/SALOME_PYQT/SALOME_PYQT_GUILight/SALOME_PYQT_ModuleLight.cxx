@@ -31,8 +31,11 @@
 #include "LightApp_Application.h"
 #include "LightApp_SelectionMgr.h"
 #include "SUIT_DataBrowser.h"
-#include "sipAPISalomePyQtGUILight.h"
-
+#if defined(__SALOME_USE_PYSIDE__)
+  #include "shiboken.h"
+#else
+  #include "sipAPISalomePyQtGUILight.h"
+#endif
 #ifndef GUI_DISABLE_CORBA
 #include <Container_init_python.hxx>
 #endif
@@ -64,7 +67,7 @@
 //
 
 #define INIT_FUNCTION PyInit_SalomePyQtGUILight
-#if defined(SIP_STATIC_MODULE)
+#if defined(SIP_STATIC_MODULE) && !defined(__SALOME_USE_PYSIDE__)
 extern "C" void INIT_FUNCTION();
 #else
 PyMODINIT_FUNC INIT_FUNCTION();

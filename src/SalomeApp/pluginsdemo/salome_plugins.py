@@ -262,9 +262,11 @@ def runSalomeShellSession(context):
     import os,subprocess
     import salome_version
     import platform
-    from PyQt5.Qt import QMessageBox
     from SalomePyQt import SalomePyQt
-
+    if SalomePyQt.UsePySide():
+      from PySide2.QtWidgets import QMessageBox
+    else:
+      from PyQt5.Qt import QMessageBox
     version = salome_version.getVersion(full=True)
     runner = 'run_salome.exe' if platform.system() == 'Windows' else 'salome'
 
@@ -300,8 +302,11 @@ def runCodeEditor(context):
     import os,subprocess
     import salome_version
     import shutil
-    from PyQt5.Qt import QMessageBox
     from SalomePyQt import SalomePyQt
+    if SalomePyQt.UsePySide():
+      from PySide2.QtWidgets import QMessageBox
+    else:
+      from PyQt5.Qt import QMessageBox
     try:
       command = shutil.which('code')
       if command:

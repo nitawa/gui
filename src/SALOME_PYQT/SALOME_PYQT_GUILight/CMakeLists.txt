@@ -18,7 +18,14 @@
 #
 
 INCLUDE(UseQtExt)
-INCLUDE(UsePyQt)
+
+INCLUDE(SalomeQtPythonBindings)
+SALOME_SETUP_QT_PYTHON_BINDINGS()
+IF(SALOME_USE_PYSIDE)
+  SALOME_SETUP_PYSIDE_SHIBOKEN()
+  ADD_DEFINITIONS(-D__SALOME_USE_PYSIDE__)
+ENDIF()
+
 
 # --- options ---
 
@@ -27,7 +34,6 @@ INCLUDE_DIRECTORIES(
   ${OpenCASCADE_INCLUDE_DIR}
   ${QT_INCLUDES}
   ${PYTHON_INCLUDE_DIRS}
-  ${SIP_INCLUDE_DIR}
   ${PTHREAD_INCLUDE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${PROJECT_SOURCE_DIR}/src/CAM
@@ -43,6 +49,18 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/tools/PyConsole/src
   ${PROJECT_SOURCE_DIR}/tools/PyInterp/src
 )
+if (SALOME_USE_PYSIDE)
+  INCLUDE_DIRECTORIES(
+    ${PYSIDE2_INCLUDE_DIRS}
+    ${SHIBOKEN2_INCLUDE_DIR}
+    ${PROJECT_SOURCE_DIR}/src/SalomeApp
+    ${PROJECT_SOURCE_DIR}/tools/PyEditor/src
+  )
+else (SALOME_USE_PYSIDE)
+  INCLUDE_DIRECTORIES(
+    ${SIP_INCLUDE_DIR}
+  )
+endif(SALOME_USE_PYSIDE)
 IF(SALOME_USE_SALOMEOBJECT)
   INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/OBJECT)
 ENDIF()
@@ -87,16 +105,17 @@ SET(SalomePyQtGUILight_HEADERS ${_moc_HEADERS} ${_other_HEADERS})
 
 # --- resources ---
 
-# sip files / to be processed by sip
-SET(_sip_files SALOME_PYQT_GUILight.sip)
-
 # --- sources ---
 
 # sources / moc wrappings
 QT_WRAP_MOC(_moc_SOURCES ${_moc_HEADERS})
 
 # sources / sip wrappings
-PYQT_WRAP_SIP(_sip_SOURCES ${_sip_files})
+if (NOT SALOME_USE_PYSIDE)
+  # sip files / to be processed by sip
+  SET(_sip_files SALOME_PYQT_GUILight.sip)
+  PYQT_WRAP_SIP(_sip_SOURCES ${_sip_files})
+endif(NOT SALOME_USE_PYSIDE)
 
 # sources / static
 SET(_other_SOURCES
@@ -109,16 +128,61 @@ SET(_other_SOURCES
   SALOME_PYQT_Selector.cxx
 )
 
-# sources / to compile
-SET(SalomePyQtGUILight_SOURCES ${_other_SOURCES} ${_moc_SOURCES} ${_sip_SOURCES})
+if (SALOME_USE_PYSIDE)
+  set(SalomePyQtGUILight_generated_sources
+    ${CMAKE_CURRENT_BINARY_DIR}/SalomePyQtGUILight/salomepyqtguilight_module_wrapper.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/SalomePyQtGUILight/salome_pyqt_modulelight_wrapper.cpp
+  )
+
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  set(CMAKE_INSTALL_RPATH ${SHIBOKEN2_MODULE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+  get_directory_property(include_directories_list INCLUDE_DIRECTORIES)
+
+  salome_generate_pyside_bindings(
+    PYSIDE2_BINDING_GENERATED_SOURCES ${SalomePyQtGUILight_generated_sources}
+    PYSIDE2_BINDING_WRAPPED_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/SalomePyQtGUILight_bindings.h
+    PYSIDE2_BINDING_TYPESYSTEM_FILE ${CMAKE_CURRENT_SOURCE_DIR}/SalomePyQtGUILight_bindings.xml
+    PYSIDE2_BINDING_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    PYSIDE2_BINDING_INCLUDE_DIRECTORIES ${include_directories_list}
+  )
+
+  set(SalomePyQtGUILight_SOURCES ${_other_SOURCES} ${_moc_SOURCES} ${SalomePyQtGUILight_generated_sources})
+
+else(SALOME_USE_PYSIDE)
+  # sources / to compile
+  SET(SalomePyQtGUILight_SOURCES ${_other_SOURCES} ${_moc_SOURCES} ${_sip_SOURCES})
+endif(SALOME_USE_PYSIDE)
 
 # --- rules ---
 
-ADD_LIBRARY(SalomePyQtGUILight ${SalomePyQtGUILight_SOURCES})
-TARGET_LINK_LIBRARIES(SalomePyQtGUILight ${_link_LIBRARIES})
-INSTALL(TARGETS SalomePyQtGUILight DESTINATION ${SALOME_INSTALL_LIBS})
+if (SALOME_USE_PYSIDE)
+  ADD_LIBRARY(SalomePyQtGUILight ${SalomePyQtGUILight_SOURCES})
+  target_compile_definitions(SalomePyQtGUILight PRIVATE BINDINGS_BUILD)
+  target_include_directories(SalomePyQtGUILight PRIVATE
+    ${include_directories_list}
+    ${PYSIDE2_PYTHON_INCLUDE_DIR}
+    ${SHIBOKEN2_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PYSIDE2_INCLUDE_DIRS}
+  )
+  target_link_libraries(SalomePyQtGUILight
+    ${SHIBOKEN2_SHARED_LIBRARIES}
+    ${PYSIDE2_SHARED_LIBRARIES}
+    ${_link_LIBRARIES}
+  )
+  INSTALL(TARGETS SalomePyQtGUILight DESTINATION ${SALOME_INSTALL_LIBS})
+  INSTALL(FILES ${SalomePyQtGUILight_HEADERS} DESTINATION ${SALOME_INSTALL_HEADERS})
+else(SALOME_USE_PYSIDE)
+  ADD_LIBRARY(SalomePyQtGUILight ${SalomePyQtGUILight_SOURCES})
+  TARGET_LINK_LIBRARIES(SalomePyQtGUILight ${_link_LIBRARIES})
+  INSTALL(TARGETS SalomePyQtGUILight DESTINATION ${SALOME_INSTALL_LIBS})
 
-INSTALL(FILES ${SalomePyQtGUILight_HEADERS} DESTINATION ${SALOME_INSTALL_HEADERS})
+  INSTALL(FILES ${SalomePyQtGUILight_HEADERS} DESTINATION ${SALOME_INSTALL_HEADERS})
 
-FILE(GLOB make_clean_files ${CMAKE_CURRENT_BINARY_DIR}/sip*)
-SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${make_clean_files}")
+  FILE(GLOB make_clean_files ${CMAKE_CURRENT_BINARY_DIR}/sip*)
+  SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${make_clean_files}")
+endif(SALOME_USE_PYSIDE)
+
