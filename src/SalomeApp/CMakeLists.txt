@@ -50,6 +50,7 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/SVTK
   ${PROJECT_SOURCE_DIR}/src/TOOLSGUI
   ${PROJECT_SOURCE_DIR}/src/VTKViewer
+  ${PROJECT_SOURCE_DIR}/src/ExtensionManager
 )
 
 IF(SALOME_USE_PYCONSOLE)
@@ -59,6 +60,12 @@ IF(SALOME_USE_PYCONSOLE)
     ${PROJECT_SOURCE_DIR}/tools/PyInterp/src
   )
 ENDIF()
+
+IF(SALOME_EXTENSION_MANAGER)
+  INCLUDE_DIRECTORIES(
+    ${PROJECT_SOURCE_DIR}/src/ExtensionManager
+  )
+ENDIF(SALOME_EXTENSION_MANAGER)
 
 # additional preprocessor / compiler flags
 ADD_DEFINITIONS(
@@ -130,6 +137,9 @@ IF(NOT SALOME_LIGHT_ONLY)
   LIST(APPEND _link_LIBRARIES ${KERNEL_SalomeLifeCycleCORBA})
 ENDIF()
 
+IF(SALOME_EXTENSION_MANAGER)
+  LIST(APPEND _link_LIBRARIES SalomeExtensionManager)
+ENDIF()
 # --- headers ---
 
 # header files / to be processed by moc
