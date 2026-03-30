@@ -29,6 +29,8 @@
 #include <QMap>
 #include <QIcon>
 
+#include <ribbonbuttongroup.h>
+
 class QLabel;
 class QString;
 class QAction;
@@ -40,6 +42,7 @@ class SUIT_ViewManager;
 class SUIT_ResourceMgr;
 class SUIT_ShortcutMgr;
 class SUIT_Study;
+class QtxRibbonMgr;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -133,6 +136,12 @@ public:
   int                   createMenu( const int, const QString&, const int = -1, const int = -1 );
   int                   createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1 );
   int                   createMenu( QAction*, const QString&, const int = -1, const int = -1, const int = -1 );//@}
+
+  /** @name Create ribbon functions*/ //@{
+  void                  createRibbon( const int, const QString&, const QString&,
+                                      RibbonButtonGroup::ButtonSize = RibbonButtonGroup::LargeButton );
+  void                  createRibbon( QAction*, const QString&, const QString&,
+                                      RibbonButtonGroup::ButtonSize = RibbonButtonGroup::LargeButton );//@}
 
 signals:
   void                  applicationClosed( SUIT_Application* );

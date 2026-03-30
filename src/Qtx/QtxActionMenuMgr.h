@@ -34,6 +34,7 @@
 class QMenu;
 class QMainWindow;
 class QStringList;
+class QtxRibbonMgr;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -56,6 +57,9 @@ public:
   virtual ~QtxActionMenuMgr();
 
   QWidget*     menuWidget() const;
+
+  QtxRibbonMgr* ribbonMgr() const;
+  void          setRibbonMgr( QtxRibbonMgr* );
 
   virtual bool isVisible( const int, const int ) const;
   virtual void setVisible( const int, const int, const bool );
@@ -144,12 +148,15 @@ private:
 
   void         triggerUpdate( const int, const bool rec = true );
 
+void          insertToRibbon( QAction*, const QStringList& );
+
 private:
   typedef QMap<int, QAction*> MenuMap;     //!< actions map
   
 private:
   MenuNode*       myRoot;        //!< root menu node
   QWidget*        myMenu;        //!< menu widget
+  QtxRibbonMgr*   myRibbonMgr;   //!< ribbon manager
   MenuMap         myMenus;       //!< actions map
   QMap<int, bool> myUpdateIds;   //!< list of actions ID being updated
 };

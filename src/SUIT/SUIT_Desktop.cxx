@@ -27,6 +27,8 @@
 #include <QtxLogoMgr.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+#include <QtxRibbonMgr.h>
+#include <QMenuBar>
 
 #include <QPointer>
 #include <QCloseEvent>
@@ -56,9 +58,49 @@ private:
 SUIT_Desktop::SUIT_Desktop()
 : QtxMainWindow()
 {
-  myMenuMgr = new QtxActionMenuMgr( this );
-  myToolMgr = new QtxActionToolMgr( this );
-  myLogoMgr = new QtxLogoMgr( menuBar() );
+  myMenuMgr   = new QtxActionMenuMgr( this );
+  myToolMgr   = new QtxActionToolMgr( this );
+  myLogoMgr   = new QtxLogoMgr( menuBar() );
+  myRibbonMgr = new QtxRibbonMgr( this );
+
+  // Enable ribbon redirection for standard menu and toolbar managers
+  myMenuMgr->setRibbonMgr( myRibbonMgr );
+  myToolMgr->setRibbonMgr( myRibbonMgr );
+
+  // Set default modern theme
+  myRibbonMgr->setTheme( Ribbon::Office2016BlueTheme );
+
+  // Hide the standard menu bar to ensure all menus go to the ribbon
+  if ( menuBar() )
+    menuBar()->hide();
+
+  // Hide all standard toolbars to ensure only the ribbon is visible
+  QList<QToolBar*> toolbars = findChildren<QToolBar*>();
+  for ( QToolBar* tb : toolbars )
+  {
+    if ( tb->parentWidget() == this )
+      tb->hide();
+  }
+}
+
+/*!
+  Overriden to hide toolbar if ribbon is present.
+*/
+void SUIT_Desktop::addToolBar( QToolBar* tb )
+{
+  QMainWindow::addToolBar( tb );
+  if ( myRibbonMgr && tb )
+    tb->hide();
+}
+
+/*!
+  Overriden to hide toolbar if ribbon is present.
+*/
+void SUIT_Desktop::addToolBar( Qt::ToolBarArea area, QToolBar* tb )
+{
+  QMainWindow::addToolBar( area, tb );
+  if ( myRibbonMgr && tb )
+    tb->hide();
 }
 
 /*!
@@ -66,6 +108,33 @@ SUIT_Desktop::SUIT_Desktop()
 */
 SUIT_Desktop::~SUIT_Desktop()
 {
+}
+
+/*!
+  Override to hide toolbars as soon as they are added as children.
+*/
+void SUIT_Desktop::childEvent( QChildEvent* e )
+{
+  if ( e && e->type() == QEvent::ChildAdded )
+  {
+    if ( myRibbonMgr && qobject_cast<QToolBar*>( e->child() ) )
+    {
+      QToolBar* tb = static_cast<QToolBar*>( e->child() );
+      tb->hide();
+    }
+
+    if ( e->child()->isWidgetType() )
+    {
+      // The following line is a workaround to avoid showing view window as a top-level window
+      // before re-parenting it to workstack (issue #23467).
+      // See SUIT_ViewWindow::setVisible() and SUIT_Desktop::customEvent().
+      e->child()->setProperty("blockShow", true );
+      QApplication::postEvent( this, new ReparentEvent( QEvent::Type( Reparent ), e->child() ) );
+      return;
+    }
+  }
+
+  QtxMainWindow::childEvent( e );
 }
 
 /*!
@@ -101,23 +170,6 @@ void SUIT_Desktop::closeEvent( QCloseEvent* e )
 {
   emit closing( this, e );
   e->ignore();
-}
-
-/*!
-  Child event.
-*/
-void SUIT_Desktop::childEvent( QChildEvent* e )
-{
-  if ( e->type() == QEvent::ChildAdded && e->child()->isWidgetType() ) {
-    // The following line is a workaround to avoid showing view window as a top-level window
-    // before re-parenting it to workstack (issue #23467).
-    // See SUIT_ViewWindow::setVisible() and SUIT_Desktop::customEvent().
-    e->child()->setProperty("blockShow", true );
-    QApplication::postEvent( this, new ReparentEvent( QEvent::Type( Reparent ), e->child() ) );
-  }
-  else {
-    QtxMainWindow::childEvent( e );
-  }
 }
 
 void SUIT_Desktop::customEvent( QEvent* e )
@@ -163,6 +215,14 @@ QtxActionToolMgr* SUIT_Desktop::toolMgr() const
 QtxLogoMgr* SUIT_Desktop::logoMgr() const
 {
   return myLogoMgr;
+}
+
+/*!
+  Gets ribbon manager.
+*/
+QtxRibbonMgr* SUIT_Desktop::ribbonMgr() const
+{
+  return myRibbonMgr;
 }
 
 /*!

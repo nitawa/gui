@@ -32,6 +32,8 @@
 #include <QPair>
 #include <QKeySequence>
 
+#include <ribbonbuttongroup.h>
+
 class QAction;
 class QMenu;
 class QIcon;
@@ -39,6 +41,7 @@ class QIcon;
 class QtxActionGroup;
 class QtxActionMenuMgr;
 class QtxActionToolMgr;
+class QtxRibbonMgr;
 class SUIT_Study;
 class SUIT_Application;
 class CAM_Study;
@@ -93,10 +96,11 @@ public:
   virtual bool           activateOperation( const QString& actionId );
   virtual bool           activateOperation( const QString& actionId, const QString& pluginName );
 
-  // actions/menu/toolbars management
+  // actions/menu/toolbars/ribbon management
 
   QtxActionMenuMgr*      menuMgr() const;
   QtxActionToolMgr*      toolMgr() const;
+  QtxRibbonMgr*          ribbonMgr() const;
 
   QString                makeActionID(const QString& theInModuleActionID) const;
 
@@ -123,6 +127,11 @@ public:
   int                    createMenu( const int, const QString&, const int = -1, const int = -1 );
   int                    createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1 );
   int                    createMenu( QAction*, const QString&, const int = -1, const int = -1, const int = -1 );
+
+  void                   createRibbon( const int, const QString&, const QString&,
+                                       RibbonButtonGroup::ButtonSize = RibbonButtonGroup::LargeButton );
+  void                   createRibbon( QAction*, const QString&, const QString&,
+                                       RibbonButtonGroup::ButtonSize = RibbonButtonGroup::LargeButton );
 
   virtual void           logAction( QAction* );
   bool                   isActionLoggingEnabled() const;

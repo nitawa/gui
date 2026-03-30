@@ -36,6 +36,7 @@
 #include <QtxMenu.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+#include <QtxRibbonMgr.h>
 
 #include <QMenu>
 #include <QStatusBar>
@@ -269,6 +270,31 @@ void STD_Application::createActions()
   createTool( separator(), stdTBar );
   createTool( EditCopyId, stdTBar );
   createTool( EditPasteId, stdTBar );
+
+  // ── Ribbon bar ─────────────────────────────────────────────────────────
+  // Populate the ribbon with the same standard actions so users can operate
+  // entirely from the ribbon-style interface.
+
+  QtxRibbonMgr* rm = desk ? desk->ribbonMgr() : nullptr;
+  if ( rm )
+  {
+    // Home tab – File group
+    rm->addTab( resMgr->loadPixmap( "STD", tr( "ICON_FILE_NEW" ) ),
+                tr( "MEN_DESK_FILE" ) );
+    createRibbon( FileNewId,    tr( "MEN_DESK_FILE" ), tr( "MEN_DESK_FILE" ) );
+    createRibbon( FileOpenId,   tr( "MEN_DESK_FILE" ), tr( "MEN_DESK_FILE" ) );
+    createRibbon( FileSaveId,   tr( "MEN_DESK_FILE" ), tr( "MEN_DESK_FILE" ) );
+    createRibbon( FileSaveAsId, tr( "MEN_DESK_FILE" ), tr( "MEN_DESK_FILE" ) );
+
+    // Home tab – Edit group
+    createRibbon( EditCopyId,  tr( "MEN_DESK_FILE" ), tr( "MEN_DESK_EDIT" ) );
+    createRibbon( EditPasteId, tr( "MEN_DESK_FILE" ), tr( "MEN_DESK_EDIT" ) );
+
+    // Help tab
+    rm->addTab( resMgr->loadPixmap( "STD", tr( "ICON_DESK_ABOUT" ) ),
+                tr( "MEN_DESK_HELP" ) );
+    createRibbon( HelpAboutId, tr( "MEN_DESK_HELP" ), tr( "MEN_DESK_HELP" ) );
+  }
 }
 
 /*!

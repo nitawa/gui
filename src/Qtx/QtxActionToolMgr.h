@@ -35,6 +35,7 @@
 class QToolBar;
 class QMainWindow;
 class QAction;
+class QtxRibbonMgr;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -64,6 +65,9 @@ public:
   virtual ~QtxActionToolMgr();
 
   QMainWindow*    mainWindow() const;
+
+  QtxRibbonMgr*   ribbonMgr() const;
+  void            setRibbonMgr( QtxRibbonMgr* );
 
   int             createToolBar( const QString&, int = -1, QMainWindow* = 0, bool = true );
   int             createToolBar( const QString&, const QString&, int = -1, QMainWindow* = 0, bool = true );
@@ -132,6 +136,8 @@ private:
   void            simplifySeparators( QToolBar* );
   void            triggerUpdate( const int );
 
+  void            insertToRibbon( QAction*, const QString& );
+
 private:
   typedef struct { NodeList nodes; QToolBar* toolBar; } ToolBarInfo;   //!< toolbar info
   typedef QMap<int, ToolBarInfo>                        ToolBarMap;    //!< toolbars map
@@ -139,6 +145,7 @@ private:
 private:
   ToolBarMap      myToolBars;      //!< toobars map
   QMainWindow*    myMainWindow;    //!< parent main window
+  QtxRibbonMgr*   myRibbonMgr;     //!< ribbon manager
   QMap<int,int>   myUpdateIds;     //!< list of actions ID being updated
 };
 

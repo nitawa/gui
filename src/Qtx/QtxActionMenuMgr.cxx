@@ -24,6 +24,9 @@
 // Author:    Alexander SOLOVYOV, Sergey TELKOV
 //
 #include "QtxActionMenuMgr.h"
+#include "QtxRibbonMgr.h"
+#include <ribbon.h>
+#include <ribbonbuttongroup.h>
 
 #include "QtxAction.h"
 
@@ -115,7 +118,8 @@ QtxActionMenuMgr::MenuNode::~MenuNode()
 QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
 : QtxActionMgr( p ), 
   myRoot( new MenuNode() ),
-  myMenu( p ? p->menuBar() : 0 )
+  myMenu( p ? p->menuBar() : 0 ),
+  myRibbonMgr( 0 )
 {
   if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
@@ -130,7 +134,8 @@ QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
 QtxActionMenuMgr::QtxActionMenuMgr( QWidget* mw, QObject* p )
 : QtxActionMgr( p ), 
   myRoot( new MenuNode() ),
-  myMenu( mw )
+  myMenu( mw ),
+  myRibbonMgr( 0 )
 {
   if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
@@ -150,6 +155,22 @@ QtxActionMenuMgr::~QtxActionMenuMgr()
   }
 
   delete myRoot;
+}
+
+/*!
+  \return ribbon manager
+*/
+QtxRibbonMgr* QtxActionMenuMgr::ribbonMgr() const
+{
+  return myRibbonMgr;
+}
+
+/*!
+  Sets ribbon manager.
+*/
+void QtxActionMenuMgr::setRibbonMgr( QtxRibbonMgr* mgr )
+{
+  myRibbonMgr = mgr;
 }
 
 /*!
@@ -235,6 +256,9 @@ int QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group,
 */
 int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int group, const int idx )
 {
+  if ( myRibbonMgr )
+    insertToRibbon( action( id ), menus );
+
   int pId = createMenu( menus, -1 );
   if ( pId == -1 )
     return -1;
@@ -259,11 +283,33 @@ int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int 
 */
 int QtxActionMenuMgr::insert( QAction* a, const QStringList& menus, const int group, const int idx )
 {
+  if ( myRibbonMgr )
+    insertToRibbon( a, menus );
+
   int pId = createMenu( menus, -1 );
   if ( pId == -1 )
     return -1;
 
   return insert( a, pId, group, idx );
+}
+
+/*!
+  \internal
+*/
+void QtxActionMenuMgr::insertToRibbon( QAction* a, const QStringList& menus )
+{
+  if ( !myRibbonMgr || !a || menus.isEmpty() )
+    return;
+
+  QString tabName = "Home";
+  QString groupName = menus.last();
+
+  if ( menus.size() >= 2 )
+  {
+    tabName = menus.at( menus.size() - 2 );
+  }
+
+  myRibbonMgr->insert( a, tabName, groupName, RibbonButtonGroup::SmallButton );
 }
 
 /*!
@@ -282,6 +328,25 @@ int QtxActionMenuMgr::insert( const int id, const int pId, const int group, cons
   MenuNode* pNode = pId == -1 ? myRoot : find( pId );
   if ( !pNode )
     return -1;
+
+  if ( myRibbonMgr && pNode == myRoot )
+  {
+    // Try to get some title for the "Home" group if pId is -1
+    // Actually, if pId is -1, it's added to the root menu bar.
+    // If pId != -1, it's added to a submenu.
+  }
+  else if ( myRibbonMgr && pNode->parent == myRoot )
+  {
+    // This is an item in a top-level menu (e.g. File, Edit)
+    // We can map it to Home tab, and group = Menu name.
+    QAction* pAction = menuAction( pNode->id );
+    if ( pAction )
+    {
+      QStringList menus;
+      menus << pAction->text();
+      insertToRibbon( action( id ), menus );
+    }
+  }
 
   MenuNode* node = new MenuNode( pNode, id, idx, group );
 

@@ -28,7 +28,10 @@ INCLUDE_DIRECTORIES(${QT_INCLUDES})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 # libraries to link to
-SET(_link_LIBRARIES ${QT_LIBRARIES} ${OPENGL_LIBRARIES})
+# QtRibbonWidget::QtRibbonWidget is discovered / built by the top-level
+# GUI/CMakeLists.txt and its INTERFACE_INCLUDE_DIRECTORIES are propagated
+# to every consumer of the qtx library.
+SET(_link_LIBRARIES ${QT_LIBRARIES} ${OPENGL_LIBRARIES} QtRibbonWidget::QtRibbonWidget)
 
 # --- headers ---
 
@@ -40,6 +43,7 @@ SET(_moc_HEADERS
   QtxActionMgr.h
   QtxActionSet.h
   QtxActionToolMgr.h
+  QtxRibbonMgr.h
   QtxBackgroundTool.h
   QtxBiColorTool.h
   QtxColorButton.h
@@ -168,6 +172,7 @@ SET(_other_SOURCES
   QtxSearchTool.cxx
   QtxSlider.cxx
   QtxSplash.cxx
+  QtxRibbonMgr.cxx
   QtxToolBar.cxx
   QtxToolButton.cxx
   QtxToolTip.cxx

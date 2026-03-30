@@ -37,6 +37,7 @@
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+#include <QtxRibbonMgr.h>
 
 
 /*!
@@ -747,6 +748,50 @@ int SUIT_Application::registerAction( const int id, QAction* a )
 QAction* SUIT_Application::separator()
 {
   return QtxActionMgr::separator();
+}
+
+/*!
+  \brief Insert the action identified by \a id into the ribbon bar.
+
+  Convenience wrapper around QtxRibbonMgr::insert() that follows the same
+  pattern as createMenu() and createTool(). The tab and group are created
+  automatically if they do not already exist. Does nothing when the desktop
+  has no ribbon manager or the action is unknown.
+
+  \param id        action ID (as registered via registerAction())
+  \param tabName   ribbon tab label
+  \param groupName ribbon group label within the tab
+  \param size      button size (LargeButton, MediumButton or SmallButton)
+*/
+void SUIT_Application::createRibbon( const int id,
+                                      const QString& tabName,
+                                      const QString& groupName,
+                                      RibbonButtonGroup::ButtonSize size )
+{
+  createRibbon( action( id ), tabName, groupName, size );
+}
+
+/*!
+  \brief Insert \a a into the ribbon bar.
+
+  Convenience wrapper around QtxRibbonMgr::insert() that follows the same
+  pattern as createMenu() and createTool(). The tab and group are created
+  automatically if they do not already exist. Does nothing when the desktop
+  has no ribbon manager or \a a is null.
+
+  \param a         the QAction to insert
+  \param tabName   ribbon tab label
+  \param groupName ribbon group label within the tab
+  \param size      button size (LargeButton, MediumButton or SmallButton)
+*/
+void SUIT_Application::createRibbon( QAction* a,
+                                      const QString& tabName,
+                                      const QString& groupName,
+                                      RibbonButtonGroup::ButtonSize size )
+{
+  if ( !a || !desktop() || !desktop()->ribbonMgr() )
+    return;
+  desktop()->ribbonMgr()->insert( a, tabName, groupName, size );
 }
 
 /*!

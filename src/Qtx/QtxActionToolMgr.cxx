@@ -24,6 +24,9 @@
 // Author:    Alexander SOLOVYOV, Sergey TELKOV
 //
 #include "QtxActionToolMgr.h"
+#include "QtxRibbonMgr.h"
+#include <ribbon.h>
+#include <ribbonbuttongroup.h>
 
 #include "QtxAction.h"
 #include "QtxToolBar.h"
@@ -70,7 +73,8 @@
 */
 QtxActionToolMgr::QtxActionToolMgr( QMainWindow* p )
 : QtxActionMgr( p ),
-  myMainWindow( p )
+  myMainWindow( p ),
+  myRibbonMgr( 0 )
 {
 }
 
@@ -88,6 +92,22 @@ QtxActionToolMgr::~QtxActionToolMgr()
 QMainWindow* QtxActionToolMgr::mainWindow() const
 {
   return myMainWindow;
+}
+
+/*!
+  \return ribbon manager
+*/
+QtxRibbonMgr* QtxActionToolMgr::ribbonMgr() const
+{
+  return myRibbonMgr;
+}
+
+/*!
+  Sets ribbon manager.
+*/
+void QtxActionToolMgr::setRibbonMgr( QtxRibbonMgr* mgr )
+{
+  myRibbonMgr = mgr;
 }
 
 /*!
@@ -275,6 +295,10 @@ int QtxActionToolMgr::insert( const int id, const int tid, const int idx )
   if ( containsAction( id, tid ) )
     remove( id, tid );
 */
+
+  if ( myRibbonMgr )
+    insertToRibbon( action( id ), toolBar( tid )->windowTitle() );
+
   ToolNode node( id );
 
   NodeList& list = myToolBars[tid].nodes;
@@ -306,6 +330,9 @@ int QtxActionToolMgr::insert( QAction* a, const int tid, const int idx )
 */
 int QtxActionToolMgr::insert( const int id, const QString& title, const int idx )
 {
+  if ( myRibbonMgr )
+    insertToRibbon( action( id ), title );
+
   return insert( id, createToolBar( title ), idx );
 }
 
@@ -318,7 +345,22 @@ int QtxActionToolMgr::insert( const int id, const QString& title, const int idx 
 */
 int QtxActionToolMgr::insert( QAction* a, const QString& title, const int idx )
 {
+  if ( myRibbonMgr )
+    insertToRibbon( a, title );
+
   return insert( registerAction( a ), createToolBar( title ), idx );
+}
+
+/*!
+  \internal
+*/
+void QtxActionToolMgr::insertToRibbon( QAction* a, const QString& title )
+{
+  if ( !myRibbonMgr || !a || title.isEmpty() )
+    return;
+
+  // Map toolbars to groups on the Home tab by default
+  myRibbonMgr->insert( a, "Home", title, RibbonButtonGroup::LargeButton );
 }
 
 /*!

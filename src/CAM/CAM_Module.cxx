@@ -30,6 +30,7 @@
 #include <QtxActionGroup.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+#include <QtxRibbonMgr.h>
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
@@ -444,6 +445,57 @@ QtxActionToolMgr* CAM_Module::toolMgr() const
   if ( application() && application()->desktop() )
     mgr = application()->desktop()->toolMgr();
   return mgr;
+}
+
+/*!
+  \brief Get ribbon manager.
+  \return ribbon manager pointer, or nullptr if the desktop has no ribbon
+*/
+QtxRibbonMgr* CAM_Module::ribbonMgr() const
+{
+  if ( application() && application()->desktop() )
+    return application()->desktop()->ribbonMgr();
+  return nullptr;
+}
+
+/*!
+  \brief Insert the action identified by \a id into the ribbon bar.
+
+  The tab and group are created automatically if they do not already exist.
+  Does nothing if the ribbon manager is not available or the action is unknown.
+
+  \param id        action ID (as registered via registerAction())
+  \param tabName   ribbon tab label
+  \param groupName ribbon group label within the tab
+  \param size      button size (LargeButton, MediumButton, SmallButton)
+*/
+void CAM_Module::createRibbon( const int id,
+                                const QString& tabName,
+                                const QString& groupName,
+                                RibbonButtonGroup::ButtonSize size )
+{
+  createRibbon( action( id ), tabName, groupName, size );
+}
+
+/*!
+  \brief Insert \a a into the ribbon bar.
+
+  The tab and group are created automatically if they do not already exist.
+  Does nothing if the ribbon manager is not available or \a a is null.
+
+  \param a         the QAction to insert
+  \param tabName   ribbon tab label
+  \param groupName ribbon group label within the tab
+  \param size      button size (LargeButton, MediumButton, SmallButton)
+*/
+void CAM_Module::createRibbon( QAction* a,
+                                const QString& tabName,
+                                const QString& groupName,
+                                RibbonButtonGroup::ButtonSize size )
+{
+  if ( !a || !ribbonMgr() )
+    return;
+  ribbonMgr()->insert( a, tabName, groupName, size );
 }
 
 /*!

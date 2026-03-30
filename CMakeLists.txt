@@ -97,6 +97,39 @@ ENDIF()
 # Qt
 FIND_PACKAGE(SalomeQt5 REQUIRED)
 SET(QT_SALOME_VERSION 5)
+
+# QtRibbonWidget – ribbon bar widget library
+# ============================================
+# Priority 1: use a pre-installed copy pointed to by QtRibbonWidget_ROOT_DIR
+#             (also honoured via the environment variable).
+# Priority 2: auto-detect via CMake's normal search paths.
+# Priority 3: build from source if the sibling directory exists.
+SET(QtRibbonWidget_ROOT_DIR $ENV{QtRibbonWidget_ROOT_DIR} CACHE PATH
+    "Path to a pre-installed QtRibbonWidget (leave empty to auto-detect)")
+
+IF(QtRibbonWidget_ROOT_DIR AND EXISTS "${QtRibbonWidget_ROOT_DIR}")
+  FIND_PACKAGE(QtRibbonWidget REQUIRED
+    HINTS "${QtRibbonWidget_ROOT_DIR}/lib/cmake/QtRibbonWidget"
+          "${QtRibbonWidget_ROOT_DIR}")
+ELSE()
+  FIND_PACKAGE(QtRibbonWidget QUIET)
+  IF(NOT QtRibbonWidget_FOUND)
+    # Fall back to building from the sibling source directory
+    SET(_QRW_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../QtRibbonWidget")
+    IF(EXISTS "${_QRW_SRC}/CMakeLists.txt")
+      MESSAGE(STATUS "QtRibbonWidget: not installed – building from source at ${_QRW_SRC}")
+      ADD_SUBDIRECTORY("${_QRW_SRC}"
+                       "${CMAKE_CURRENT_BINARY_DIR}/QtRibbonWidget")
+    ELSE()
+      MESSAGE(FATAL_ERROR
+        "QtRibbonWidget not found.  Either:\n"
+        "  • Install it and set QtRibbonWidget_ROOT_DIR, or\n"
+        "  • Place the source tree at ${_QRW_SRC}")
+    ENDIF()
+  ENDIF()
+ENDIF()
+
+MESSAGE(STATUS "QtRibbonWidget: using target QtRibbonWidget::QtRibbonWidget")
 SET(SALOME_GUI_ENABLE_QTXWEBBROWSER TRUE)
 IF(NOT "${QT_VERSION}" VERSION_LESS "5.6.0")
   # Check that WebEngineWidgets component was found

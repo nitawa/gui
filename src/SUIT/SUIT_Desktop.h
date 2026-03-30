@@ -35,6 +35,7 @@ class QMovie;
 class QtxLogoMgr;
 class QtxActionMenuMgr;
 class QtxActionToolMgr;
+class QtxRibbonMgr;
 
 class SUIT_ViewWindow;
 
@@ -58,6 +59,7 @@ public:
   QtxActionMenuMgr*        menuMgr() const;
   QtxActionToolMgr*        toolMgr() const;
   QtxLogoMgr*              logoMgr() const;
+  QtxRibbonMgr*            ribbonMgr() const;
 
   virtual SUIT_ViewWindow* activeWindow() const = 0;
   virtual void setActiveWindow(SUIT_ViewWindow*);
@@ -72,6 +74,9 @@ public:
 
   void                     emitActivated();
   void                     emitMessage( const QString& );
+
+  virtual void             addToolBar( QToolBar* );
+  virtual void             addToolBar( Qt::ToolBarArea, QToolBar* );
 
 signals:
   void                     activated();
@@ -93,6 +98,7 @@ private:
   QtxActionMenuMgr*        myMenuMgr;
   QtxActionToolMgr*        myToolMgr;
   QtxLogoMgr*              myLogoMgr;
+  QtxRibbonMgr*            myRibbonMgr;
 };
 
 #endif
