@@ -17,12 +17,11 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
+import SalomePyQt
 if SalomePyQt.usePySide():
     from PySide2.QtWidgets import QDockWidget
 else:
     from PyQt5.Qt import *
-
-import SalomePyQt
 
 _dockWidgetNames = {
     SalomePyQt.WT_ObjectBrowser : "objectBrowserDock",

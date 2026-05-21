@@ -19,6 +19,7 @@
 #
 
 import sys
+import SalomePyQt
 if SalomePyQt.usePySide():
     from PySide2.QtCore import QObject, Signal
     from PySide2.QtWidgets import QApplication

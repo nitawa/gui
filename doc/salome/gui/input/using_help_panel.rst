@@ -130,7 +130,7 @@ Python
 For Python modules, *Help panel* can be accessed via the ``SalomePyQt`` Python module.
 
 .. code-block:: python
-
+    import SalomePyQt
     if SalomePyQt.usePySide():
       from PySide2.QtCore import Qt as Q
     else:
