@@ -114,7 +114,7 @@ bool LightApp_ExtInfoDlg::fillExtListWidget(QTableWidget* extListWidget) const
 
   // Import Python module that manages SALOME extensions
   PyLockWrapper lck; // acquire GIL
-  PyObjWrapper extensionQuery = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_query_impl");
+  PyObjWrapper extensionQuery = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_query");
   auto extRootDir = getenv("SALOME_APPLICATION_DIR");
   PyObjWrapper extInfoDict = PyObject_CallMethod(extensionQuery, (char*)"ext_info_dict", (char*)"s", extRootDir);
   if (!extInfoDict)
@@ -210,7 +210,7 @@ bool LightApp_ExtInfoDlg::fillExtTreeGraph(const GraphWrapper& graph) const
 
   // Import Python module that manages SALOME extensions
   PyLockWrapper lck; // acquire GIL
-  PyObjWrapper extensionQuery = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_query_impl");
+  PyObjWrapper extensionQuery = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_query");
   auto extRootDir = getenv("SALOME_APPLICATION_DIR");
   PyObjWrapper dependencyTree = PyObject_CallMethod(extensionQuery, (char*)"dependency_tree", (char*)"s", extRootDir);
   if (!dependencyTree)
