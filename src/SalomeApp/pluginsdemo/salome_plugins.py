@@ -337,7 +337,7 @@ def runSalomeAssistant(context):
   import tempfile
   pid_file = os.path.join(
     tempfile.gettempdir(),
-    'salome-assistant-{}.pid'.format(getpass.getuser())
+    '.salome-assistant-{}.pid'.format(getpass.getuser())
   )
 
   def _is_process_running(pid):
@@ -347,8 +347,15 @@ def runSalomeAssistant(context):
       - raises OSError          -> process does not exist
     """
     try:
-      os.kill(pid, 0)
-      return True
+      import psutil
+      p = psutil.Process(pid)
+      if p.status() == psutil.STATUS_ZOMBIE:
+        p.terminate()
+        return False
+      else:
+        return True
+    except psutil.NoSuchProcess:
+      return False
     except PermissionError:
       return True   # process alive, insufficient privilege to signal it
     except OSError:
@@ -372,6 +379,7 @@ def runSalomeAssistant(context):
     salome_assistant = os.environ.get('SALOME_ASSISTANT')
     # minimal environment to be copied -
     env = os.environ.copy()
+    env["CUDA_VISIBLE_DEVICES"] = "" # no need of GPU!
     for var in (
         'PYTHONPATH',
         'QT_PLUGIN_PATH',
