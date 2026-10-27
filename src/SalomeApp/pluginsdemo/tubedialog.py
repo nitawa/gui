@@ -19,7 +19,8 @@
 # Author : Guillaume Boulant (EDF)
 
 import sys
-if SalomePyQt.UsePySide():
+import SalomePyQt
+if SalomePyQt.usePySide():
   from PySide2.QtCore import Qt
   from PySide2.QtWidgets import QDialog, QDialogButtonBox, QApplication
 else:

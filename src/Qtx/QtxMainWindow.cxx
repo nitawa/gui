@@ -255,6 +255,8 @@ QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
 */
 QtxMainWindow::~QtxMainWindow()
 {
+  if (myMouseMove)
+    delete myMouseMove;
   setDockableMenuBar( false );
   setDockableStatusBar( false );
 }
@@ -609,21 +611,24 @@ bool QtxMainWindow::event( QEvent* e )
       bool status = true;
       Qt::Orientation o;
       switch ( cursor().shape() )
-	{
-	case Qt::SplitHCursor:
-	  o = Qt::Vertical;
-	  break;
-	case Qt::SplitVCursor:
-	  o = Qt::Horizontal;
-	  break;
-	default:
-	  status = false;
-	  break;
-	}
-      if ( status ) {
-	//myResizer = new Resizer( me->globalPos(), o, this ); // doesn't work with QT 5.12
-	myMouseMove = new QMouseEvent( me->type(), me->pos(), me->globalPos(),
-				       me->button(), me->buttons(), me->modifiers() );
+      {
+      case Qt::SplitHCursor:
+        o = Qt::Vertical;
+        break;
+      case Qt::SplitVCursor:
+        o = Qt::Horizontal;
+        break;
+      default:
+        status = false;
+        break;
+      }
+      if ( status )
+      {
+        //myResizer = new Resizer( me->globalPos(), o, this ); // doesn't work with QT 5.12
+        if (myMouseMove)
+          delete myMouseMove;
+        myMouseMove = new QMouseEvent( me->type(), me->pos(), me->globalPos(),
+                                       me->button(), me->buttons(), me->modifiers() );
       }
     }
   }

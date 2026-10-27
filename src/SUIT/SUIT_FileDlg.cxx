@@ -997,6 +997,74 @@ QStringList SUIT_FileDlg::getOpenFileNames( QWidget* parent, const QString& init
 }
 
 /*!
+  \brief Show dialog box for the multiple files selection.
+
+  If \a initial parameter is not null string it is used as starting directory
+  or file at which dialog box is opened.
+  
+  The parameter \a filters defines file filters (wildcards) to be used.
+  If filters list is empty, "All files (*)" is used by default.
+
+  The parameter \a selectedFilter inputs a filter selected by user.
+  
+  The parameter \a caption is used as dialog box title. If it is
+  is empty, the default title is used.
+  
+  The parameter \a showQuickDir specifies if it is necessary to 
+  show additional quick directories list controls in the bottom part
+  of the dialog box.
+
+  The validation of the user selection is done with help of the file 
+  validator (SUIT_FileValidator class). The last parameter \a validator
+  can be used to pass the custom file validator to the dialog box.
+  
+  \param parent parent widget
+  \param initial initial file (or directory) dialog box to be opened on
+  \param filters file filters list
+  \param selectedFilter inputs a filter selected by user
+  \param caption dialog box title
+  \param showQuickDir if \c true the quick directory list widgets will be shown
+  \param validator custom file validator
+  \return selected file names or empty list if dialog box is cancelled
+  \sa getFileName(), getExistingDirectory()
+*/
+QStringList SUIT_FileDlg::getOpenFileNames( QWidget* parent, const QString& initial,
+                                            const QStringList& filters, QString& selectedFilter, const QString& caption,
+                                            const bool showQuickDir, 
+                                            SUIT_FileValidator* validator )
+{            
+  SUIT_FileDlg fd( parent, true, showQuickDir, true );
+
+  fd.setFileMode( ExistingFiles );
+
+  if ( filters.isEmpty() )
+    fd.setNameFilter( tr( "ALL_FILES_FILTER" ) ); // All files (*)
+  else
+    fd.setNameFilters( filters );
+
+  if ( !caption.isEmpty() )
+    fd.setWindowTitle( caption );
+
+  if ( !initial.isEmpty() )
+    fd.processPath( initial );
+
+  if ( validator )
+    fd.setValidator( validator );
+
+  QStringList filenames;
+
+  if ( fd.exec() == QDialog::Accepted ){
+    filenames = fd.selectedFiles();
+    selectedFilter = fd.selectedNameFilter();
+  }
+    
+
+  QApplication::processEvents();
+
+  return filenames;
+}
+
+/*!
   \brief Show dialog box for the multiple file opening.
   \overload
 

@@ -21,6 +21,7 @@
 #
 
 import os
+import SalomePyQt
 if SalomePyQt.usePySide():
     from PySide2.QtWidgets import QDialog, QMessageBox, QListWidgetItem, QFileDialog
     from PySide2.QtCore import Qt

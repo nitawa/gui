@@ -262,8 +262,8 @@ def runSalomeShellSession(context):
     import os,subprocess
     from salome.kernel import salome_version
     import platform
-    from SalomePyQt import SalomePyQt
-    if SalomePyQt.UsePySide():
+    import SalomePyQt
+    if SalomePyQt.usePySide():
       from PySide2.QtWidgets import QMessageBox
     else:
       from PyQt5.Qt import QMessageBox
@@ -284,7 +284,8 @@ def runSalomeShellSession(context):
         if os.path.exists("/usr/bin/xterm"):
           command = 'xterm -T "SALOME %s - Shell session" -e "%s" shell &' % (version, command)
         else:
-          QMessageBox.critical(SalomePyQt.getDesktop(), "Error", "xterm does not seem to be installed")
+          from SalomePyQt import SalomePyQt as sg
+          QMessageBox.critical(sg.getDesktop(), "Error", "xterm does not seem to be installed")
           return
 
       try:
@@ -302,8 +303,8 @@ def runCodeEditor(context):
     import os,subprocess
     from salome.kernel import salome_version
     import shutil
-    from SalomePyQt import SalomePyQt
-    if SalomePyQt.UsePySide():
+    import SalomePyQt
+    if SalomePyQt.usePySide():
       from PySide2.QtWidgets import QMessageBox
     else:
       from PyQt5.Qt import QMessageBox
@@ -315,7 +316,8 @@ def runCodeEditor(context):
         except Exception as e:
           print("Error: ",e)
       else:
-        QMessageBox.critical(SalomePyQt.getDesktop(), "Error", "Visual Studio Code executable is not found")
+        from SalomePyQt import SalomePyQt as sg
+        QMessageBox.critical(sg.getDesktop(), "Error", "Visual Studio Code executable is not found")
     except Exception as e:
       print("Error: ",e)
 

@@ -1710,19 +1710,25 @@ QString PyConsole_Editor::formatDocHTML( const QString& doc ) const
 */
 QString PyConsole_Editor::extractCommon( const QStringList& matches ) const
 {
-  QString result = "";
+  QString result;
   
   if ( matches.size() > 1 ) {
     int l = 0;
     bool ok = true;
-    while ( ok && l+1 < matches[0].size() ) {
-      QString match = matches[0].left( l+1 );
+    // reference string for comparison
+    const QString & ref = matches[0];
+    int refSize = ref.size();
+    while ( ok && l <= refSize ) {
+      QString match = ref.left( l+1 );
+      // check if all other matches start with this leading part
       for ( int j = 1; j < matches.size() && ok; j++ )
         ok = matches[j].startsWith( match );
+      // all matches start with this leading part - increase length and check again
       if ( ok )
         l++;
     }
-    result = matches[0].left( l );
+    // common leading part is found - extract it
+    result = ref.left( l );
   }
 
   return result;

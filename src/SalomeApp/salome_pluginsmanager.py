@@ -41,6 +41,7 @@ the plugins manager.
 Example of a plugins manager with name salome. It searches files with
 name salome_plugins.py (example follows)::
 
+  import SalomePyQt
   import salome_pluginsmanager
 
   def about(context):
